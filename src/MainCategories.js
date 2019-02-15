@@ -1,55 +1,67 @@
 import React, { Component } from 'react';
 import { Tabs } from 'antd';
-import categories from './categories.json';
+
+const API = "http://localhost:3000/categories.json";
 
 
 class MainCategories extends Component {
 
-    render() {
-    const TabPane = Tabs.TabPane;
+	constructor(props){
+		super(props);
+		this.state = {
+			error: null,
+			isLoaded: false,
+			categories: []
+		};
+	}
 
+	componentWillMount() {
+		//var data;
 
-    console.log(categories);
+		fetch(API)
+			.then(response => response.json())
+			.then(data => this.setState({ categories: data }));
 
-    return (
-    	<Tabs defaultActiveKey='1'>
-	        <TabPane tab="Седельные тягачи" key="1">
-	        	<ul>
-	        		<li><a href="">Freightliner</a></li>
-	        		<li><a href="">International</a></li>	        		
-	        		<li><a href="">Kenworth</a></li>	        		
-	        		<li><a href="">VOLVO</a></li>	        		
-	        		<li><a href="">Peterbilt</a></li>
-	        		<li><a href="">Scania</a></li>
-	        		<li><a href="">MAN</a></li>
-	        	</ul>
-	        </TabPane>
+		//console.log()
+	}
 
+	
+	
 
-	        <TabPane tab="Грузовики" key="2">
-	        	<ul>
-	        		<li><a href="">Isuzu</a></li>
-	        		<li><a href="">Toyota</a></li>	        		
-	        		<li><a href="">Камаз</a></li>	        		
-	        	</ul>
-	        </TabPane>
+	render(){
 
-	        <TabPane tab="Спецтехника" key="3">
+		const {categories} = this.state.categories;
+		console.log(categories);
+		const TabPane = Tabs.TabPane;
+	
+		let categoriesArray = this.state.categories;
 
-	        	<ul>
-	        		<li><a href="">JCB</a></li>
-	        		<li><a href="">CAT</a></li>	        		
-	        		<li><a href="">KAMATSU</a></li>
-	        		<li><a href="">HITACHI</a></li>
-	        		<li><a href="">LIEBHERR</a></li>	        		
-	        	</ul>
+		return (
+			<div>
+			<Tabs>
+        		{categoriesArray.map(function(item, index){
+					if (item.parent_id === 0) {
+						return <TabPane tab={item.title} key={index}>
+							{
+								categoriesArray.map(function(ChItem, index) {
+									if (ChItem.parent_id === item.id) {
+										let url = '/tech/' + ChItem.id;
+										return <li key={index}><a href={url} >{ChItem.title}</a></li>
+									}
+									
+								})
+							}
+						</TabPane>
+					}
+          			
+				})}
+			</Tabs>
+			</div>
 
+		);
+	}
 
-	        </TabPane>	        
+}
 
-        </Tabs>
-        );
-    }
-  }
 
 export default MainCategories;
